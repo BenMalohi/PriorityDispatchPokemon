@@ -2,7 +2,7 @@
   <div class="detail-container">
     <!-- Top Navigation -->
     <nav class="top-nav">
-      <NuxtLink to="/" class="home-link">← Back to Home</NuxtLink>
+      <NuxtLink @click="goBack" class="home-link">← Back to Home</NuxtLink>
     </nav>
 
     <!-- Hero Section (unchanged) -->
@@ -35,8 +35,11 @@
         <img
           v-if="currentSprite"
           class="poke-img"
+          :class="{ loaded: imageLoaded }"
           :src="currentSprite"
           :alt="`${pokeName} thumbnail`"
+          loading="lazy"
+          @load="imageLoaded = true"
           @error="onImageError"
         />
         <p v-else>No image available</p>
@@ -71,14 +74,23 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { usePokemon } from '~/composables/usePokemon'
 
 const route = useRoute()
+const router = useRouter()
 const nameParam = route.params.name as string
 const { pokemon, isLoading, isError, errorMessage, fetchPokemon } = await usePokemon(nameParam)
-
+const imageLoaded = ref(false)
 const pokeName = computed(() => nameParam.charAt(0).toUpperCase() + nameParam.slice(1))
+
+function goBack() {
+  if (window.history.length > 1) {
+    router.back() // go back in history
+  } else {
+    router.push({ path: '/', query: { offset: route.query.offset || 0 } })
+  }
+}
 
 function getAbilities(abilities = []) {
   return abilities
@@ -124,6 +136,7 @@ function toggleSprite() {
   text-decoration: none;
   font-weight: 600;
   color: #3b82f6;
+  cursor: pointer;
 }
 .home-link:hover {
   color: #2563eb;
@@ -195,8 +208,13 @@ function toggleSprite() {
   margin-bottom: 15px;
   position: relative;
   z-index: 1;
+  opacity: 0;
+  transition: opacity 0.4s ease-in;
 }
 
+.poke-img.loaded {
+  opacity: 1;
+}
 /* Shadow underneath */
 .img-card::after {
   content: '';

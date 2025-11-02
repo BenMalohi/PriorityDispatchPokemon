@@ -1,43 +1,52 @@
-// This is not necessary to use in this small of a project, but I want to showcase my knoweledge of how an important feature like this can increase reusibility and efficiency in a more practical application.
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import type { Pokedex } from '~/types/pokedex'
+import { useRoute, useRouter } from 'vue-router'
 
 export interface SafePokemon {
   name: string
   thumb: string
 }
 
-// Helper to normalize API data and provide safe defaults
 function mapToSafePokemon(pokedex: Pokedex): SafePokemon {
   return {
     name: pokedex.name ?? 'Unknown',
     thumb:
       pokedex.sprites?.front_default ??
       pokedex.sprites?.other?.home?.front_default ??
-      '/assets/poke_ball.png', // fallback image
+      '/assets/poke_ball.png',
   }
 }
 
 export const usePokemonList = (limit = 60) => {
+  const route = useRoute?.() ?? { query: {} }
+  const router = useRouter?.() ?? { replace: () => {} }
+
+
   const pokemonList = ref<SafePokemon[]>([])
   const filteredPokemon = ref<SafePokemon[]>([])
   const isLoading = ref(true)
   const isError = ref(false)
   const errorMessage = ref('')
   const totalCount = ref(0)
-  const offset = ref(0)
+  const offset = ref(Number(route.query.offset) || 0)
+
+  // reactive query
+  const query = computed(() => ({ limit, offset: offset.value }))
 
   const { data, error, pending, refresh } = useFetch('/api/pokemon', {
-    query: { limit, offset: offset },
-    key: () => `pokemon-list-${offset.value}`, // unique cache key
+    query,
+    key: () => `pokemon-list-${offset.value}`,
     cache: true,
+    immediate: true, // fetch automatically on load
     transform: (response) => ({
       count: response.count,
       results: response.results?.map(mapToSafePokemon) ?? [],
     }),
   })
+  // fetch initial data
+  refresh()
 
-  // Watch for when data loads and update refs
+  // Watch for when data loads
   watch(data, (newVal) => {
     if (newVal) {
       totalCount.value = newVal.count
@@ -46,7 +55,7 @@ export const usePokemonList = (limit = 60) => {
     }
   })
 
-  // Handle loading + error state reactively
+  // Loading + error handling
   watch(pending, (val) => (isLoading.value = val))
   watch(error, (err) => {
     if (err) {
@@ -58,17 +67,20 @@ export const usePokemonList = (limit = 60) => {
     }
   })
 
-  const nextPage = async () => {
+  // update URL when offset changes
+  watch(offset, (newOffset) => {
+    router.replace({ query: { ...route.query, offset: newOffset } })
+  })
+
+  const nextPage = () => {
     if (offset.value + limit < totalCount.value) {
       offset.value += limit
-      await refresh() // re-fetch with new offset
     }
   }
 
-  const prevPage = async () => {
+  const prevPage = () => {
     if (offset.value > 0) {
       offset.value -= limit
-      await refresh()
     }
   }
 
@@ -80,6 +92,7 @@ export const usePokemonList = (limit = 60) => {
           p.name.toLowerCase().startsWith(value)
         )
   }
+
   return {
     pokemonList,
     filteredPokemon,
@@ -92,5 +105,6 @@ export const usePokemonList = (limit = 60) => {
     filterPokemon,
     nextPage,
     prevPage,
+    refresh,
   }
 }

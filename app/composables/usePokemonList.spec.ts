@@ -2,6 +2,11 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { nextTick } from 'vue'
 import { usePokemonList } from '@/composables/usePokemonList'
 
+vi.mock('vue-router', () => ({
+  useRoute: () => ({ query: {} }),
+  useRouter: () => ({ replace: vi.fn() }),
+}))
+
 describe('usePokemonList composable', () => {
   let composable: ReturnType<typeof usePokemonList>
 
