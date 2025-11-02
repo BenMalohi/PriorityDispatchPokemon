@@ -27,11 +27,10 @@ export const usePokemonList = (limit = 60) => {
   const totalCount = ref(0)
   const offset = ref(0)
 
-  const { data, error, pending, refresh } = useFetch<{
-    count: number
-    results: Pokedex[]
-  }>('/api/pokemon', {
-    query: { limit, offset },
+  const { data, error, pending, refresh } = useFetch('/api/pokemon', {
+    query: { limit, offset: offset },
+    key: () => `pokemon-list-${offset.value}`, // unique cache key
+    cache: true,
     transform: (response) => ({
       count: response.count,
       results: response.results?.map(mapToSafePokemon) ?? [],

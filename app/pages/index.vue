@@ -13,7 +13,12 @@
         />
       </div>
     </section>
-
+    <div class="pagination-top" v-if="totalCount > limit">
+        <span>
+          Showing {{ offset + 1 }}–{{ Math.min(offset + limit, totalCount) }}
+          of {{ totalCount }}
+        </span>
+      </div>
     <section v-if="isLoading || isError" class="status-section">
       <div v-if="isLoading">
         <h2>Loading Pokémon...</h2>
@@ -152,7 +157,7 @@ const {
 }
 
 .poke-grid-section {
-  margin-bottom: 60px;
+  margin-bottom: 30px;
   background-color: white;
 }
 
@@ -175,7 +180,17 @@ const {
   justify-content: center;
   align-items: center;
   gap: 20px;
-  margin-top: 40px;
+  margin-top: 10px;
+  font-weight: 500;
+  color: #475569;
+}
+
+.pagination-top {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
   font-weight: 500;
   color: #475569;
 }
