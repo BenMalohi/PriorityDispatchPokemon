@@ -5,6 +5,7 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
+    "type-check": "tsc --noEmit --noEmit --strict && npm run build",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
@@ -20,6 +21,7 @@
     "@testing-library/vue": "^8.1.0",
     "@vue/test-utils": "^2.4.6",
     "jsdom": "^27.1.0",
+    "typescript": "^5.9.3",
     "vitest": "^4.0.6"
   }
 }

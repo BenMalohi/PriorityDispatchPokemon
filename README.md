@@ -45,6 +45,13 @@ bun run dev
 # npm
 npm run test
 ```
+
+## Typescript Check
+
+```bash
+# npm
+npm run type-check
+```
 ## Production
 
 Build the application for production:
