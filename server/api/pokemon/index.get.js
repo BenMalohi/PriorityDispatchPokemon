@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { defineEventHandler, getQuery } from 'h3' // need to explicitly import for mock tests to work
 
 const api = axios.create({
   baseURL: 'https://pokeapi.co/api/v2/pokemon',
@@ -20,7 +21,6 @@ export default defineEventHandler(async (event) => {
       const res = await api.get(`/${name}`)
       return res.data
     })
-
     const fullData = await Promise.all(promises)
 
     // Return full data + total count

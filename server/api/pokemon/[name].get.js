@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { defineEventHandler, getRouterParam, createError } from 'h3'
 
 const api = axios.create({
   baseURL: 'https://pokeapi.co/api/v2/pokemon',
@@ -11,7 +12,7 @@ export default defineEventHandler(async (event) => {
   if (!name) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Missing Pokémon name parameter.',
+      message: 'Missing Pokémon name parameter.',
     })
   }
 
@@ -22,17 +23,20 @@ export default defineEventHandler(async (event) => {
     if (!data) {
       throw createError({
         statusCode: 404,
-        statusMessage: `Pokémon "${name}" not found.`,
+        message: `Pokémon "${name}" not found.`,
       })
     }
 
     return data
   } catch (error) {
+    // If error is already an H3 error, rethrow it
+    if (error?.statusCode) throw error
+
     console.error('Pokémon API fetch error:', error.message)
 
     throw createError({
       statusCode: error.response?.status || 500,
-      statusMessage: `Failed to fetch Pokémon "${name}": ${error.message || 'Unknown error'}`,
+      message: `Failed to fetch Pokémon "${name}": ${error.message || 'Unknown error'}`,
     })
   }
 })

@@ -80,7 +80,6 @@ export const usePokemonList = (limit = 60) => {
           p.name.toLowerCase().startsWith(value)
         )
   }
-
   return {
     pokemonList,
     filteredPokemon,
