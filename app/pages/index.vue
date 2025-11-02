@@ -38,6 +38,26 @@
         <p>Try searching for a different name</p>
       </div>
     </section>
+      <div class="pagination" v-if="totalCount > limit">
+        <div
+          :disabled="offset <= 0"
+          @click="prevPage"
+          class="page-btn"
+        >
+          ← Previous
+        </div>
+        <span>
+          Showing {{ offset + 1 }}–{{ Math.min(offset + limit, totalCount) }}
+          of {{ totalCount }}
+        </span>
+        <div
+          :disabled="offset + limit >= totalCount"
+          @click="nextPage"
+          class="page-btn"
+        >
+          Next →
+        </div>
+      </div>
   </div>
 </template>
 
@@ -52,9 +72,14 @@ const {
   isLoading,
   isError,
   errorMessage,
-  fetchPokemonList,
   filterPokemon,
-} = await usePokemonList(60)
+  totalCount,
+  offset,
+  limit,
+  nextPage,
+  prevPage,
+  refresh,
+} = usePokemonList(60)
 </script>
 
 <style scoped>
@@ -143,5 +168,35 @@ const {
   padding: 40px 0;
   font-size: 1.2rem;
   color: #475569;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 40px;
+  font-weight: 500;
+  color: #475569;
+}
+
+.page-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #3b82f6;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.page-btn:disabled {
+  background-color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.page-btn:hover:not(:disabled) {
+  background-color: #2563eb;
 }
 </style>

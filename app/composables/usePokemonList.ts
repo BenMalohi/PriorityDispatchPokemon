@@ -1,8 +1,7 @@
 // This is not necessary to use in this small of a project, but I want to showcase my knoweledge of how an important feature like this can increase reusibility and efficiency in a more practical application.
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import type { Pokedex } from '~/types/pokedex'
 
-// ------------------ Types ------------------
 export interface SafePokemon {
   name: string
   thumb: string
@@ -19,35 +18,58 @@ function mapToSafePokemon(pokedex: Pokedex): SafePokemon {
   }
 }
 
-export const usePokemonList = async (limit = 60) => {
+export const usePokemonList = (limit = 60) => {
   const pokemonList = ref<SafePokemon[]>([])
   const filteredPokemon = ref<SafePokemon[]>([])
   const isLoading = ref(true)
   const isError = ref(false)
   const errorMessage = ref('')
+  const totalCount = ref(0)
+  const offset = ref(0)
 
-  const fetchPokemonList = async () => {
-    try {
-      isLoading.value = true
+  const { data, error, pending, refresh } = useFetch<{
+    count: number
+    results: Pokedex[]
+  }>('/api/pokemon', {
+    query: { limit, offset },
+    transform: (response) => ({
+      count: response.count,
+      results: response.results?.map(mapToSafePokemon) ?? [],
+    }),
+  })
+
+  // Watch for when data loads and update refs
+  watch(data, (newVal) => {
+    if (newVal) {
+      totalCount.value = newVal.count
+      pokemonList.value = newVal.results
+      filteredPokemon.value = newVal.results
+    }
+  })
+
+  // Handle loading + error state reactively
+  watch(pending, (val) => (isLoading.value = val))
+  watch(error, (err) => {
+    if (err) {
+      isError.value = true
+      errorMessage.value = err.message || 'Failed to fetch Pokémon.'
+    } else {
       isError.value = false
       errorMessage.value = ''
+    }
+  })
 
-      const { data, error } = await useFetch<Pokedex[]>('/api/pokemon', {
-        query: { limit },
-        transform: (list) => list?.map(mapToSafePokemon) ?? [],
-      })
+  const nextPage = async () => {
+    if (offset.value + limit < totalCount.value) {
+      offset.value += limit
+      await refresh() // re-fetch with new offset
+    }
+  }
 
-      if (error.value) throw new Error(error.value.message || 'Failed to fetch Pokémon.')
-
-      pokemonList.value = data.value ?? []
-      filteredPokemon.value = pokemonList.value
-    } catch (err) {
-      const e = err as Error
-      isError.value = true
-      errorMessage.value = e.message
-      console.error('Fetch error:', e)
-    } finally {
-      isLoading.value = false
+  const prevPage = async () => {
+    if (offset.value > 0) {
+      offset.value -= limit
+      await refresh()
     }
   }
 
@@ -55,10 +77,10 @@ export const usePokemonList = async (limit = 60) => {
     const value = search.trim().toLowerCase()
     filteredPokemon.value = !value
       ? pokemonList.value
-      : pokemonList.value.filter((p) => p.name.toLowerCase().startsWith(value))
+      : pokemonList.value.filter((p) =>
+          p.name.toLowerCase().startsWith(value)
+        )
   }
-
-  await fetchPokemonList()
 
   return {
     pokemonList,
@@ -66,7 +88,11 @@ export const usePokemonList = async (limit = 60) => {
     isLoading,
     isError,
     errorMessage,
-    fetchPokemonList,
+    totalCount,
+    offset,
+    limit,
     filterPokemon,
+    nextPage,
+    prevPage,
   }
 }

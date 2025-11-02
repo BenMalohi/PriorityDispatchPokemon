@@ -53,7 +53,7 @@
 
         <!-- Stats -->
         <div class="stats" v-if="pokemon.stats?.length">
-          <h3 style="color: #3b82f6;">Stats</h3>
+          <h3>Stats</h3>
           <div class="stats-grid">
             <div v-for="stat in pokemon.stats" :key="stat.stat.name" class="stat-item">
               <span class="stat-name">{{ stat.stat.name.charAt(0).toUpperCase() + stat.stat.name.slice(1) }}</span>
@@ -175,7 +175,6 @@ function toggleSprite() {
 
 
 .img-card {
-  background: #fff;
   border-radius: 20px;
   padding: 20px;
   display: flex;
@@ -234,7 +233,7 @@ function toggleSprite() {
 
 /* Stats Bars */
 .stats {
-  margin-top: 25px;
+  margin-top: 10px;
 }
 .stats h3 {
   font-size: 1.2rem;
@@ -255,7 +254,7 @@ function toggleSprite() {
   width: 100px;
   font-weight: 600;
   font-size: 1rem;
-  color: #1e293b;
+  color: #3b82f6;
 }
 .bar {
   background: #e5e7eb;
