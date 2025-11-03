@@ -4,7 +4,7 @@ This is a small Nuxt 3 project built to explore Pokémon data and practice build
 
 Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
-![Image of Main Page](image.png)
+![Main Page](mainPage.png)
 
 ## Setup
 
