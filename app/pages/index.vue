@@ -2,13 +2,13 @@
   <div class="landing-container">
     <section class="hero">
       <h1>Welcome to the Pokémon Directory</h1>
-      <p>Explore, search, and discover your favorite Pokémon!</p>
+      <p>Explore and discover your favorite Pokémon!</p>
 
       <div class="search">
         <input
-          v-model="inputSearch"
-          placeholder="Search for Pokémon..."
-          @input="filterPokemon(inputSearch)"
+          v-model="inputFilter"
+          placeholder="Filter Pokémon..."
+          @input="filterPokemon(inputFilter)"
           :disabled="isLoading || isError"
         />
       </div>
@@ -70,7 +70,7 @@
 import { ref } from 'vue'
 import { usePokemonList } from '~/composables/usePokemonList'
 
-const inputSearch = ref('')
+const inputFilter = ref<string>('');
 
 const {
   filteredPokemon,
@@ -84,7 +84,7 @@ const {
   nextPage,
   prevPage,
   refresh,
-} = usePokemonList(60)
+} = usePokemonList(60);
 </script>
 
 <style scoped>

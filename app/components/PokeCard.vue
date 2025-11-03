@@ -1,20 +1,12 @@
 <template>
-  <NuxtLink
-    class="link"
-    :to="`/${pokemon.name}`"
-    aria-label="View Pokémon details"
-  >
+  <NuxtLink class="link" :to="`/${pokemon.name}`" aria-label="View Pokémon details">
     <div class="card">
       <div class="card-header">
         <h3>{{ capitalizedName }}</h3>
       </div>
       <div class="img-wrapper">
-        <img
-          class="thumb"
-          :src="pokemon.thumb || fallbackImage"
-          :alt="`${capitalizedName} thumbnail`"
-          @error="handleImageError"
-        />
+        <img class="thumb" :src="pokemon.thumb || fallbackImage" :alt="`${capitalizedName} thumbnail`"
+          @error="handleImageError" />
       </div>
       <div class="card-footer">
       </div>
@@ -23,9 +15,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import type { PropType } from 'vue'
-import type { Pokemon } from '~/types/pokemon'
+import { computed } from 'vue';
+import type { PropType } from 'vue';
+import type { Pokemon } from '~/types/pokemon';
 
 // ---------- Props ----------
 const props = defineProps({
@@ -33,22 +25,22 @@ const props = defineProps({
     type: Object as PropType<Pokemon>,
     required: true,
   },
-})
+});
 
 // ---------- Fallback Image ----------
-const fallbackImage = '/images/fallback-pokemon.png'
+const fallbackImage = '/images/fallback-pokemon.png';
 
 // ---------- Computed ----------
 const capitalizedName = computed(() => {
   const name = props.pokemon.name || ''
   return name.charAt(0).toUpperCase() + name.slice(1)
-})
+});
 
 // ---------- Image Error Handler ----------
 const handleImageError = (event: Event) => {
-  const target = event.target as HTMLImageElement
-  target.src = fallbackImage
-}
+  const target = event.target as HTMLImageElement;
+  target.src = fallbackImage;
+};
 </script>
 
 <style scoped>

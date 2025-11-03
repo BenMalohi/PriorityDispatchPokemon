@@ -73,47 +73,47 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { usePokemon } from '~/composables/usePokemon'
+import { computed, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { usePokemon } from '~/composables/usePokemon';
 
-const route = useRoute()
-const router = useRouter()
-const nameParam = route.params.name as string
-const { pokemon, isLoading, isError, errorMessage, fetchPokemon } = await usePokemon(nameParam)
-const imageLoaded = ref(false)
-const pokeName = computed(() => nameParam.charAt(0).toUpperCase() + nameParam.slice(1))
+const route = useRoute(); 
+const router = useRouter();
+const nameParam = route.params.name as string;
+const { pokemon, isLoading, isError, errorMessage, fetchPokemon } = await usePokemon(nameParam);
+const imageLoaded = ref<boolean>(false);
+const pokeName = computed(() => nameParam.charAt(0).toUpperCase() + nameParam.slice(1));
 
 function goBack() {
   if (window.history.length > 1) {
-    router.back() // go back in history
+    router.back(); 
   } else {
-    router.push({ path: '/', query: { offset: route.query.offset || 0 } })
+    router.push({ path: '/', query: { offset: route.query.offset || 0 } }); 
   }
 }
 
 function getAbilities(abilities = []) {
   return abilities
     .map(a => a.ability.name.charAt(0).toUpperCase() + a.ability.name.slice(1))
-    .join(', ') || 'Unknown'
+    .join(', ') || 'Unknown'; 
 }
 
 function onImageError(event: Event) {
-  const img = event.target as HTMLImageElement
-  img.src = '/assets/poke_ball.png'
+  const img = event.target as HTMLImageElement;
+  img.src = '/assets/poke_ball.png';
 }
 
 // ---------------- Sprite Toggle ----------------
-const showingBack = ref(false)
+const showingBack = ref<boolean>(false);
 const currentSprite = computed(() => {
   if (!pokemon.value) return null
   return showingBack.value && pokemon.value.sprites?.back_default
     ? pokemon.value.sprites.back_default
     : pokemon.value.sprites?.other?.home?.front_default || pokemon.value.sprites.front_default
-})
+});
 
 function toggleSprite() {
-  showingBack.value = !showingBack.value
+  showingBack.value = !showingBack.value;
 }
 </script>
 
