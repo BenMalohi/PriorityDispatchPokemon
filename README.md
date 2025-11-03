@@ -4,6 +4,8 @@ This is a small Nuxt 3 project built to explore Pokémon data and practice build
 
 Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
+![Image of Main Page](image.png)
+
 ## Setup
 
 Make sure to install dependencies:
@@ -39,6 +41,7 @@ yarn dev
 # bun
 bun run dev
 ```
+
 ## Testing
 
 ```bash
@@ -52,6 +55,7 @@ npm run test
 # npm
 npm run type-check
 ```
+
 ## Production
 
 Build the application for production:
